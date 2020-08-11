@@ -6,3 +6,7 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 - npm install
 - npm run start
 ----
+
+Prior Work:
+https://github.com/VadimDez/ng2-pdf-viewer#readme
+https://github.com/agentcooper/react-pdf-highlighter

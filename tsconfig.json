@@ -6,5 +6,18 @@
 */
 {
   "files": [],
-  "references": []
+  "references": [
+    {
+      "path": "./projects/pdf-highlighter/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/pdf-highlighter/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/pdf-highlighter-test/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/pdf-highlighter-test/tsconfig.spec.json"
+    }
+]
 }

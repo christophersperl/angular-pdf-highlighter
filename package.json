@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng build pdf-highlighter && ng serve",
+    "dev": "ng build pdf-highlighter && ng serve -o",
     "build": "ng build pdf-highlighter && ng build pdf-highlighter-test",
     "test": "ng test",
     "lint": "ng lint",

@@ -10,15 +10,17 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 ## Build:
 
-- ## npm run build
+- npm run build
+
 
 ## Screenshot of UI:
 
 ![Pic of the UI](UI.png)
 Prior Work:
 
-- https://github.com/VadimDez/ng2-pdf-viewer#readme [^1]
-- https://github.com/agentcooper/react-pdf-highlighte [^2]
+- https://github.com/VadimDez/ng2-pdf-viewer#readme <sup>[1](#myfootnote1)</sup>
+- https://github.com/agentcooper/react-pdf-highlighte <sup>[2](#myfootnote2)</sup>
 
-[^1]: I used ng2-pdf-viewer to wrap pdf.js and get some events.
-[^2]: I looked at this superior Project to get an Idea of how to calculate the Position of the Selected Text on an PDF.
+<a name="myfootnote1">1</a>: I used ng2-pdf-viewer to wrap pdf.js and get some events.
+
+<a name="myfootnote2">2</a>: I looked at this superior Project, to get an Idea of how to calculate the Position of the Selected Text on an PDF.

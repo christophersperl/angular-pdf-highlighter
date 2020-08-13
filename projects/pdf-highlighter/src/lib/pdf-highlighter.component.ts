@@ -286,6 +286,8 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
       highlightGettingAddedToCorrespondingPage.style.height =
         (newHighlightToAppend.height + 2) * this.zoom + 'px'; // TODO: replace Magic Numbers.
       highlightGettingAddedToCorrespondingPage.style.zIndex = '4';
+      highlightGettingAddedToCorrespondingPage.title =
+        newHighlightToAppend.groupId;
       highlightContainerOnCorrespondingPage.appendChild(
         highlightGettingAddedToCorrespondingPage
       );

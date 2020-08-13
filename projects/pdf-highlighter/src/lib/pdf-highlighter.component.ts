@@ -12,9 +12,8 @@ import { PdfDocumentWithHighlights, Highlight } from './utils/pdf-document-with-
 import { WindowReferenceService } from './utils/window-reference.service';
 import { debounce } from './utils/debounce-decorator';
 
-// TODO: Replace with online Document.
-const demoPdfDocument: PdfDocumentWithHighlights = {
-  id: '1',
+const initialPdfDocument: PdfDocumentWithHighlights = {
+  id: '0',
   pdfDocumentPath: 'assets/Test.pdf',
   Highlights: [],
 };
@@ -79,7 +78,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
   ngOnInit() {
     document.addEventListener('mouseup', this.mouseUpHandler());
 
-    this.pdfDocumentWithHighlights = demoPdfDocument;
+    this.pdfDocumentWithHighlights = initialPdfDocument;
     this.pdfSrcPath = this.pdfDocumentWithHighlights.pdfDocumentPath;
   }
 
@@ -320,6 +319,19 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
    */
   public resetHighlights() {
     this.pdfDocumentWithHighlights.Highlights = [];
+    this.rerenderView();
+    this.newPdfDocumentWithHighlightsCreated.emit(
+      this.pdfDocumentWithHighlights
+    );
+  }
+
+  /**
+   * Set an Pdf-Document wirh Highlights to be shown in the Pdf-Viewer.
+   * @param pdfDocumentWithHighlights The Pdf Document that should be displayed.
+   */
+  public setPdfDocumentWithHighlights(pdfDocumentWithHighlights: PdfDocumentWithHighlights) {
+    this.pdfDocumentWithHighlights = pdfDocumentWithHighlights;
+    this.pdfSrcPath = this.pdfDocumentWithHighlights.pdfDocumentPath;
     this.rerenderView();
     this.newPdfDocumentWithHighlightsCreated.emit(
       this.pdfDocumentWithHighlights

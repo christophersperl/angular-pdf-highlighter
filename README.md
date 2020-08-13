@@ -6,18 +6,19 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 
 - npm install
 - npm run start
-  > or as an alternative
-  >
-  > - npm run dev
+- (npm run dev)
 
 ## Build:
 
-- npm run build
-  > Have fun!
+- ## npm run build
 
----
+## Screenshot of UI:
 
+![Pic of the UI](UI.png)
 Prior Work:
 
-- https://github.com/VadimDez/ng2-pdf-viewer#readme
-- https://github.com/agentcooper/react-pdf-highlighter
+- https://github.com/VadimDez/ng2-pdf-viewer#readme [^1]
+- https://github.com/agentcooper/react-pdf-highlighte [^2]
+
+[^1]: I used ng2-pdf-viewer to wrap pdf.js and get some events.
+[^2]: I looked at this superior Project to get an Idea of how to calculate the Position of the Selected Text on an PDF.

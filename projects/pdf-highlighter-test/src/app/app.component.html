@@ -1,4 +1,9 @@
-<div style="width: 100vw; height: 100vh; background: rgb(219, 219, 219);">
+<nav class="navbar navbar-light bg-light" [style.height]="'3vh'">
+  <span [style.position]="'fixed'" [style.top]="'1px'"
+    >angular pdf highlighter <strong>DEMO</strong></span
+  >
+</nav>
+<div style="width: 100vw; height: 97vh; background: rgb(219, 219, 219);">
   <as-split direction="horizontal">
     <as-split-area class="scrollBar" [size]="70" minSize="40" maxSize="85">
       <lib-pdf-highlighter

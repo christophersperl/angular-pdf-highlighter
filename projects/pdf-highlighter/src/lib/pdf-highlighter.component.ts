@@ -116,6 +116,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
       return;
     }
 
+
     const clientRects = Array.from(range.getClientRects());
     const offset = node.getBoundingClientRect();
 

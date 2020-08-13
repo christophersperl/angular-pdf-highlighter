@@ -18,8 +18,8 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ![Pic of the UI](UI.png)
 Prior Work:
 
-- https://github.com/VadimDez/ng2-pdf-viewer#readme <sup>[1](#myfootnote1)</sup>
-- https://github.com/agentcooper/react-pdf-highlighte <sup>[2](#myfootnote2)</sup>
+- https://github.com/VadimDez/ng2-pdf-viewer <sup>[1](#myfootnote1)</sup>
+- https://github.com/agentcooper/react-pdf-highlighter <sup>[2](#myfootnote2)</sup>
 
 <a name="myfootnote1">1</a>: I used ng2-pdf-viewer to wrap pdf.js and get some events.
 

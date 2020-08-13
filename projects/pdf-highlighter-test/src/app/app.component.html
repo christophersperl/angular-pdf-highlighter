@@ -87,6 +87,9 @@
         <div class="card-header" [style.backgroundColor]="highlight.color">
           <span class="badge badge-light">id:</span>
           {{ highlight.groupId }}
+          <a [href]="'#highlight__' + highlight.id" class="btn btn-light btn-xs"
+            >Scroll</a
+          >
           <button
             (click)="deleteHighlight(highlight.groupId)"
             type="button"

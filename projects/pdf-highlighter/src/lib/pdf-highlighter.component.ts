@@ -4,22 +4,19 @@ import {
   OnDestroy,
   ElementRef,
   Renderer2,
-  Input,
   Output,
   EventEmitter,
 } from '@angular/core';
 import { TextLayerRenderedEvent } from './utils/text-layer-rendered-event';
-import { PdfDocumentWithHighlights } from './utils/pdf-document-with-highlights';
+import { PdfDocumentWithHighlights, Highlight } from './utils/pdf-document-with-highlights';
 import { WindowReferenceService } from './utils/window-reference.service';
 import { debounce } from './utils/debounce-decorator';
 
-// stub for implementation of highlight rendering.
-const currentPDFDocument: PdfDocumentWithHighlights = {
+// TODO: Replace with online Document.
+const demoPdfDocument: PdfDocumentWithHighlights = {
   id: '1',
   pdfDocumentPath: 'assets/Test.pdf',
-  Highlights: [
-
-  ],
+  Highlights: [],
 };
 
 @Component({
@@ -27,7 +24,7 @@ const currentPDFDocument: PdfDocumentWithHighlights = {
   template: `
   <pdf-viewer
   style="display: block;"
-  [src]="pdfSrc"
+  [src]="pdfSrcPath"
   [zoom]="zoom"
   [render-text]="true"
   [render-text-mode]="1"
@@ -41,226 +38,291 @@ const currentPDFDocument: PdfDocumentWithHighlights = {
 })
 export class PdfHighlighterComponent implements OnInit, OnDestroy {
 
-  PdfDocumentWithHighlights: PdfDocumentWithHighlights;
-  pdfSrc = ""
+  private pdfDocumentWithHighlights: PdfDocumentWithHighlights;
+  private zoomMin: number = 0.5;
+  private zoomMax: number = 1.5;
 
-  @Output() newItemEvent = new EventEmitter<string>();
+  public pdfSrcPath: string;
 
-  zoom = 1;
-  zoomMin = 0.5;
-  zoomMax = 1.5;
+  zoom: number = 1;
+  @Output('new-highlight-created') newHighlightCreated = new EventEmitter<
+    Highlight
+  >();
+
+  @Output('new-pdfdocumentwithhighlights-created')
+  newPdfDocumentWithHighlightsCreated = new EventEmitter<
+    PdfDocumentWithHighlights
+  >();
 
   constructor(
     private renderer: Renderer2,
     private elem: ElementRef,
     private ngWindow: WindowReferenceService
   ) {
-    // TODO: switch maybe to MD5
+    // TODO: switch to common Hash-Algorithm.
     Object.defineProperty(String.prototype, 'hashCode', {
       value: function () {
-        var hash = 0, i, chr;
+        var hash = 0,
+          i,
+          chr;
         for (i = 0; i < this.length; i++) {
           chr = this.charCodeAt(i);
-          hash = ((hash << 5) - hash) + chr;
+          hash = (hash << 5) - hash + chr;
           hash |= 0;
         }
         return Math.abs(hash).toString();
-      }
+      },
     });
-
   }
 
-  // adding event listener to the text Layers,
+
   ngOnInit() {
-    // load existing Highlightings
-    this.PdfDocumentWithHighlights = currentPDFDocument;
-    this.pdfSrc = this.PdfDocumentWithHighlights.pdfDocumentPath;
+    document.addEventListener('mouseup', this.mouseUpHandler());
 
-    document.addEventListener('mouseup', this.onSelectionChange());
+    this.pdfDocumentWithHighlights = demoPdfDocument;
+    this.pdfSrcPath = this.pdfDocumentWithHighlights.pdfDocumentPath;
   }
-  // and remove them.
+
   ngOnDestroy() {
-    document.removeEventListener('mouseup', this.onSelectionChange());
+    document.removeEventListener('mouseup', this.mouseUpHandler());
   }
 
-  private onSelectionChange(): (this: Document, ev: Event) => any {
+  private mouseUpHandler(): (this: Document, ev: Event) => any {
     return () => {
       const textSelection = this.ngWindow.nativeWindow.getSelection();
+      const textSelectionisValidRangeOfText = !(textSelection.isCollapsed || textSelection.type !== 'Range');
 
-      // not selected a range with text
-      if (textSelection.isCollapsed || textSelection.type !== 'Range') {
+      if (textSelectionisValidRangeOfText) {
+        this.appendToHighlights(textSelection);
+      } else {
         return;
       }
-      this.actOnSelectionChanged(textSelection);
     };
   }
 
-  /**
-   * This function acts when a new text passage get's selected
-   * cause this event get's emitted a lot we've to debouce it.
-   * @param textSelection the Range Selected with Mouse in PDF - Document.
-   */
   @debounce()
-  private actOnSelectionChanged(textSelection) {
+  private appendToHighlights(textSelection) {
 
     const range: Range = textSelection.getRangeAt(0);
-    const page = range.startContainer.parentElement
-
-    const node = page.closest(
-      '.page'
-    );
+    const page = range.startContainer.parentElement;
+    const node = page.closest('.page');
 
     if (!(node instanceof HTMLElement)) {
       return;
     }
-
     const _pageNumber = node.dataset.pageNumber;
 
     if (!_pageNumber) {
       return;
     }
 
-    let clientRects = Array.from(range.getClientRects());
+    const clientRects = Array.from(range.getClientRects());
     const offset = node.getBoundingClientRect();
 
-    clientRects.forEach(rect => {
-      const _top = rect.top + node.scrollTop - offset.top - 9; // TODO: Replace Magic Number of Border Width
+    const _highlightColor: string =
+      "hsl(" + Math.random() * 360 + ", 100%, 80%)";
+    const _containedText: string = range.toString();
+
+    // Different rects of same Highlight have same Class groupId.
+    const _groupId: string = (clientRects[0].top + clientRects[0].width + clientRects[0].left)
+      .toString()
+      // @ts-ignore
+      .hashCode() + _pageNumber;
+
+    clientRects.forEach((rect) => {
+      const _top = rect.top + node.scrollTop - offset.top - 9; // TODO: Replace Magic Number
       const _left = rect.left + node.scrollLeft - offset.left - 9;
       const _width = rect.width;
       const _height = rect.height;
-      const _id: string = (rect.top + rect.width + rect.left).toString()
-
-      const newHighlight = {
+      const _id: string = (rect.top + rect.width + rect.left)
+        .toString()
         // @ts-ignore
-        id: _id.hashCode(),
+        .hashCode();
+
+      const newHighlight: Highlight = {
+        id: _id + _pageNumber,
+        groupId: _groupId,
         onPageNumber: parseInt(_pageNumber, 10),
         x: _left * (1 / this.zoom),
         y: _top * (1 / this.zoom),
         width: _width * (1 / this.zoom),
         height: _height * (1 / this.zoom),
-        color: ('#' + (Math.random() * 0xFFFFFF << 0).toString(16).padStart(6, '0'))
-      }
+        color: _highlightColor,
+        containedText: _containedText
+      };
 
-      this.PdfDocumentWithHighlights.Highlights = [...this.PdfDocumentWithHighlights.Highlights, newHighlight]
+      this.newHighlightCreated.emit(newHighlight);
 
-    })
+      this.pdfDocumentWithHighlights.Highlights = [
+        ...this.pdfDocumentWithHighlights.Highlights,
+        newHighlight,
+      ];
 
+      this.newPdfDocumentWithHighlightsCreated.emit(
+        this.pdfDocumentWithHighlights
+      );
+    });
   }
 
-  /**
-   *  zoom is also used to scale the Highlights.
-   */
-  zoomIn() {
-    if (this.zoom < this.zoomMax) {
-      this.zoom += 0.05;
-    }
-  }
-  zoomOut() {
-    if (this.zoom > this.zoomMin) {
-      this.zoom -= 0.05;
-    }
-  }
-
-  /**
-   * The Text Layer is rendered initially
-   * and also every time the Zoom changes.
-   * @param e Event when a page finished rendering.
-   */
-  textLayerRendered(e: TextLayerRenderedEvent) {
+  // Renders initail and when Zoom changes.
+  textLayerRendered(e: TextLayerRenderedEvent): void {
     if (e.pageNumber) {
       let query = `.pdfViewer .page[data-page-number="${e.pageNumber}"] .textLayer`;
-      let textLayerElementOnPage = this.elem.nativeElement.querySelector(
-        query
-      );
+      let textLayerElementOnPage = this.elem.nativeElement.querySelector(query);
       textLayerElementOnPage.style.zIndex = '2';
 
-      // on mouseup, new highlights to be rendereres on corresponding page.
-      textLayerElementOnPage.addEventListener("mouseup", (e) => {
-        const currentPage = parseInt(e.target.parentElement.closest(".page").getAttribute("data-page-number"), 10);
-        this.PdfDocumentWithHighlights.Highlights.forEach((element) => {
-          if (currentPage === element.onPageNumber) {
-            let query = `.pdfViewer .page[data-page-number="${currentPage}"] .textLayer .highlightsForPage_${currentPage}`;
-            let highlightContainerOnCorrespondingPage = this.elem.nativeElement.querySelector(
+      // Get the Page-Number the Highlight belongs.
+      textLayerElementOnPage.addEventListener('mouseup', (e) => {
+        const highlightsPageNumber = parseInt(
+          e.target.parentElement
+            .closest('.page')
+            .getAttribute('data-page-number'),
+          10
+        );
+
+        this.pdfDocumentWithHighlights.Highlights.forEach((highlight) => {
+          if (highlightsPageNumber === highlight.onPageNumber) {
+            const query = `.pdfViewer .page[data-page-number="${highlightsPageNumber}"] .textLayer .highlightsForPage_${highlightsPageNumber}`;
+            const highlightContainerOnCorrespondingPage = this.elem.nativeElement.querySelector(
               query
             );
-
-            let existingHighlights = highlightContainerOnCorrespondingPage.getElementsByClassName("scHighlightClassHandle");
+            let existingHighlights = highlightContainerOnCorrespondingPage.getElementsByClassName(
+              'scHighlightClassHandle'
+            );
             existingHighlights = [...existingHighlights];
 
-
-            this.createElementAndAppendIfNotExisting(existingHighlights, highlightContainerOnCorrespondingPage, element);
+            this.createElementAndAppendIfNotExisting(
+              existingHighlights,
+              highlightContainerOnCorrespondingPage,
+              highlight
+            );
           }
         });
+      });
 
-      })
-
-
-      let divContainingTheTextHighlights = document.createElement('div');
-      divContainingTheTextHighlights.className = `highlightsForPage_${e.pageNumber}`;
-      divContainingTheTextHighlights.style.pointerEvents = 'none';
-      divContainingTheTextHighlights.style.position = 'absolute';
-      divContainingTheTextHighlights.style.zIndex = '1';
-      divContainingTheTextHighlights.style.left = '0';
-      divContainingTheTextHighlights.style.height =
-        textLayerElementOnPage.style.height;
-      divContainingTheTextHighlights.style.width =
-        textLayerElementOnPage.style.width;
-      textLayerElementOnPage.appendChild(divContainingTheTextHighlights);
-
-
-      // after inserting the "divContainingTheTextHighlights" we start adding highlights.
-      this.addHighlightsToPages(e, this.PdfDocumentWithHighlights);
+      this.appendHighlightContainersToTextLayers(e, textLayerElementOnPage);
+      this.appendHighlightsToHighlightContainers(e, this.pdfDocumentWithHighlights);
     }
   }
 
-  addHighlightsToPages(e: TextLayerRenderedEvent, PdfDocumentWithHighlights: PdfDocumentWithHighlights) {
-    PdfDocumentWithHighlights.Highlights.forEach((element) => {
-      if (e.pageNumber === element.onPageNumber) {
-        let query = `.pdfViewer .page[data-page-number="${e.pageNumber}"] .textLayer .highlightsForPage_${element.onPageNumber}`;
+  private appendHighlightContainersToTextLayers(e: TextLayerRenderedEvent<any>, textLayerElementOnPage: any) {
+    let divContainingTheTextHighlights = document.createElement('div');
+    divContainingTheTextHighlights.className = `highlightsForPage_${e.pageNumber}`;
+    divContainingTheTextHighlights.style.pointerEvents = 'none';
+    divContainingTheTextHighlights.style.position = 'absolute';
+    divContainingTheTextHighlights.style.zIndex = '1';
+    divContainingTheTextHighlights.style.left = '0';
+    divContainingTheTextHighlights.style.height =
+      textLayerElementOnPage.style.height;
+    divContainingTheTextHighlights.style.width =
+      textLayerElementOnPage.style.width;
+    textLayerElementOnPage.appendChild(divContainingTheTextHighlights);
+  }
+
+  private appendHighlightsToHighlightContainers(
+    e: TextLayerRenderedEvent,
+    PdfDocumentWithHighlights: PdfDocumentWithHighlights
+  ) {
+    PdfDocumentWithHighlights.Highlights.forEach((highlight) => {
+      if (e.pageNumber === highlight.onPageNumber) {
+        const query = `.pdfViewer .page[data-page-number="${e.pageNumber}"] .textLayer .highlightsForPage_${highlight.onPageNumber}`;
         let highlightContainerOnCorrespondingPage = this.elem.nativeElement.querySelector(
           query
         );
 
-        let existingHighlights = highlightContainerOnCorrespondingPage.getElementsByClassName("scHighlightClassHandle");
+        let existingHighlights = highlightContainerOnCorrespondingPage.getElementsByClassName(
+          'scHighlightClassHandle'
+        );
         existingHighlights = [...existingHighlights];
 
-        this.createElementAndAppendIfNotExisting(existingHighlights, highlightContainerOnCorrespondingPage, element);
+        this.createElementAndAppendIfNotExisting(
+          existingHighlights,
+          highlightContainerOnCorrespondingPage,
+          highlight
+        );
       }
     });
   }
 
-  private createElementAndAppendIfNotExisting(existingHighlights, highlightContainerOnCorrespondingPage, element) {
+  private createElementAndAppendIfNotExisting(
+    existingHighlights: Highlight[],
+    highlightContainerOnCorrespondingPage: HTMLElement,
+    newHighlightToAppend: Highlight
+  ) {
     const existingHighlightIds = [];
     if (existingHighlights !== undefined) {
       for (const iterator of existingHighlights) {
         existingHighlightIds.push(iterator.id);
       }
     }
-    highlightContainerOnCorrespondingPage.getElementsByClassName("scHighlightClassHandle");
+    highlightContainerOnCorrespondingPage.getElementsByClassName(
+      'scHighlightClassHandle'
+    );
 
-
-    if (!existingHighlightIds.includes(`highlight__${element.id}`)) {
+    if (!existingHighlightIds.includes(`highlight__${newHighlightToAppend.id}`)) {
       let highlightGettingAddedToCorrespondingPage = document.createElement(
         'div'
       );
-      highlightGettingAddedToCorrespondingPage.id = `highlight__${element.id}${element.onPageNumber}`;
+      highlightGettingAddedToCorrespondingPage.id = `highlight__${newHighlightToAppend.id}`;
       highlightGettingAddedToCorrespondingPage.className =
-        'scHighlightClassHandle';
+        `scHighlightClassHandle groupId__${newHighlightToAppend.groupId}`;
       highlightGettingAddedToCorrespondingPage.style.position = 'absolute';
       highlightGettingAddedToCorrespondingPage.style.backgroundColor =
-        element.color;
+        newHighlightToAppend.color;
       highlightGettingAddedToCorrespondingPage.style.left =
-        element.x * this.zoom + 'px';
+        (newHighlightToAppend.x - 2) * this.zoom + 'px'; // TODO: replace Magic Numbers.
       highlightGettingAddedToCorrespondingPage.style.top =
-        element.y * this.zoom + 'px';
+        (newHighlightToAppend.y - 2) * this.zoom + 'px'; // TODO: replace Magic Numbers.
       highlightGettingAddedToCorrespondingPage.style.width =
-        element.width * this.zoom + 'px';
+        (newHighlightToAppend.width + 4) * this.zoom + 'px'; // TODO: replace Magic Numbers.
       highlightGettingAddedToCorrespondingPage.style.height =
-        element.height * this.zoom + 'px';
+        (newHighlightToAppend.height + 2) * this.zoom + 'px'; // TODO: replace Magic Numbers.
       highlightGettingAddedToCorrespondingPage.style.zIndex = '4';
       highlightContainerOnCorrespondingPage.appendChild(
         highlightGettingAddedToCorrespondingPage
       );
     }
+  }
+
+  // Not pretty but it get's the job done.
+  private flipflop: boolean = false;
+  private rerenderView() {
+    if (this.flipflop) {
+      this.zoom -= 0.000001;
+    } else {
+      this.zoom += 0.000001;
+    }
+    this.flipflop = !this.flipflop;
+  }
+
+  // ###################Functions meant for Parent Component##########################
+
+  /**
+   * Increases the Scale of the PDF-Document.
+   */
+  public zoomIn(): void {
+    if (this.zoom < this.zoomMax) {
+      this.zoom += 0.05;
+    }
+  }
+
+  /**
+   * Decreases the Scale of the PDF-Document.
+   */
+  public zoomOut(): void {
+    if (this.zoom > this.zoomMin) {
+      this.zoom -= 0.05;
+    }
+  }
+
+  /**
+   * Reset the Highlights on current PDF-Document.
+   */
+  public resetHighlights() {
+    this.pdfDocumentWithHighlights.Highlights = [];
+    this.rerenderView();
+    this.newPdfDocumentWithHighlightsCreated.emit(
+      this.pdfDocumentWithHighlights
+    );
   }
 }

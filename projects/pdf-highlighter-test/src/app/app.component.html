@@ -1,2 +1,27 @@
-<lib-pdf-highlighter></lib-pdf-highlighter>
+<div class="column_left">
+  <lib-pdf-highlighter
+    #pdfViewer
+    (new-highlight-created)="handleNewHighlight($event)"
+    (new-pdfdocumentwithhighlights-created)="handleNewDocument($event)"
+  ></lib-pdf-highlighter>
+</div>
+<div class="column_right">
+  <button id="zoomInButton" (click)="increaseZoom()">+</button>
+  <button id="zoomOutButton" (click)="decreaseZoom()">-</button>
+  <button id="resetButton" (click)="resetHighlights()">
+    Reset Highlights
+  </button>
+  <ul>
+    <li
+      class="l-item"
+      *ngFor="let highlight of highlights"
+      [style.borderColor]="highlight.color"
+    >
+      <strong class="l-marker">id: {{ highlight.groupId }}</strong>
+
+      {{ highlight.containedText }}
+    </li>
+  </ul>
+</div>
+
 <router-outlet></router-outlet>

@@ -1,11 +1,18 @@
-.ng2-pdf-viewer-container {
-  overflow-x: auto;
-  position: relative;
-  height: 100%;
-  -webkit-overflow-scrolling: touch;
-}
-
+//
 :host ::ng-deep {
+  .scHighlightClassHandle {
+    border-radius: 0.5em;
+    pointer-events: fill;
+  }
+
+  // style the Viewer
+  .sc-pdf-viewer-container {
+    overflow-x: auto;
+    position: relative;
+    height: 100%;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .textLayer {
     position: absolute;
     left: 0;
@@ -13,8 +20,9 @@
     right: 0;
     bottom: 0;
     overflow: hidden;
-    opacity: 0.2;
+    opacity: 1;
     line-height: 1;
+    mix-blend-mode: multiply;
 
     > span {
       color: transparent;
@@ -49,11 +57,11 @@
     }
 
     ::-moz-selection {
-      background: rgb(0, 0, 255);
+      background: fuchsia;
     }
 
     ::selection {
-      background: rgb(0, 0, 255);
+      background: fuchsia;
     }
 
     .endOfContent {
@@ -311,10 +319,6 @@
 
       h1 {
         display: inline-block;
-        // font-size: 1em;
-        // border-bottom: 1px solid #000000;
-        // margin: 0;
-        // padding-bottom: 0.2em;
       }
 
       span {
@@ -359,9 +363,6 @@
       margin: 1px auto -8px auto;
       position: relative;
       overflow: visible;
-      // https://stackoverflow.com/questions/21025212/border-image-not-showing-in-safari
-      // "transparent" makes the border not show up in Safari. But adding a light transparent color did
-      // rgba(0,0,0,0.01). But there needs to be an alpha value larger than 0.
       border: 9px solid rgba(0, 0, 0, 0);
       box-sizing: initial;
       background-clip: content-box;

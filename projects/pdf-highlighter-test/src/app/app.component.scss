@@ -1,0 +1,45 @@
+.column_left {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 70vw;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: auto;
+  background-color: rgb(100, 100, 100);
+}
+
+.column_right {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  width: 30vw;
+  height: 100vh;
+  overflow-y: scroll;
+  overflow-x: hidden;
+  background-color: rgb(100, 100, 100);
+}
+
+ul {
+  list-style-type: none;
+  padding-inline-start: 0px;
+  font-family: "Courier New", Courier, monospace;
+}
+
+.l-item {
+  box-shadow: 0.1em 0.3em silver;
+  border-radius: 0.5em;
+  padding: 0.2em;
+  margin: 0.5em;
+  border: 4px solid;
+  background-color: white;
+}
+
+.l-marker {
+  color: white;
+  background-color: rgb(42, 42, 42);
+  border-radius: 0.5em;
+  margin: 2px;
+  padding: 3px;
+  font-size: smaller;
+}

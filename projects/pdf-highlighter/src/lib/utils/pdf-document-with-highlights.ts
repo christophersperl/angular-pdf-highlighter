@@ -4,8 +4,9 @@ export interface PdfDocumentWithHighlights {
   Highlights?: Highlight[];
 }
 
-interface Highlight {
+export interface Highlight {
   id: string;
+  groupId?: string;
   onPageNumber: number;
   x: number;
   y: number;

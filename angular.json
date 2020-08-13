@@ -163,6 +163,10 @@
           }
         }
       }
-    }},
-  "defaultProject": "pdf-highlighter"
+    }
+  },
+  "defaultProject": "pdf-highlighter",
+  "cli": {
+    "analytics": false
+  }
 }

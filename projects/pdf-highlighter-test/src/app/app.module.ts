@@ -4,18 +4,21 @@ import { NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 
-import { PdfHighlighterModule } from "pdf-highlighter";
+// Imports for Test-Demo.
+import { AngularSplitModule } from 'angular-split';
+
+// Import the Highlighter.
+import { PdfHighlighterModule } from 'pdf-highlighter';
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    PdfHighlighterModule
+    PdfHighlighterModule,
+    AngularSplitModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

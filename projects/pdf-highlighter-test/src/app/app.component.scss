@@ -1,29 +1,6 @@
-.column_left {
-  position: absolute;
-  left: 0px;
-  top: 0px;
-  width: 70vw;
-  height: 100vh;
-  overflow-y: scroll;
-  overflow-x: auto;
-  background-color: rgb(100, 100, 100);
-}
-
-.column_right {
-  position: absolute;
-  right: 0px;
-  top: 0px;
-  width: 30vw;
-  height: 100vh;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  background-color: rgb(100, 100, 100);
-}
-
 ul {
   list-style-type: none;
   padding-inline-start: 0px;
-  font-family: "Courier New", Courier, monospace;
 }
 
 .l-item {

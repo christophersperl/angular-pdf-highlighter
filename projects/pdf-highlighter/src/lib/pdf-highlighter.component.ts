@@ -8,7 +8,10 @@ import {
   EventEmitter,
 } from '@angular/core';
 import { TextLayerRenderedEvent } from './utils/text-layer-rendered-event';
-import { PdfDocumentWithHighlights, Highlight } from './utils/pdf-document-with-highlights';
+import {
+  PdfDocumentWithHighlights,
+  Highlight,
+} from './utils/pdf-document-with-highlights';
 import { WindowReferenceService } from './utils/window-reference.service';
 import { debounce } from './utils/debounce-decorator';
 
@@ -21,22 +24,20 @@ const initialPdfDocument: PdfDocumentWithHighlights = {
 @Component({
   selector: 'lib-pdf-highlighter',
   template: `
-  <pdf-viewer
-  style="display: block;"
-  [src]="pdfSrcPath"
-  [zoom]="zoom"
-  [render-text]="true"
-  [render-text-mode]="1"
-  [show-borders]="true"
-  [external-link-target]="'blank'"
-  (text-layer-rendered)="textLayerRendered($event)"
-></pdf-viewer>
+    <pdf-viewer
+      style="display: block;"
+      [src]="pdfSrcPath"
+      [zoom]="zoom"
+      [render-text]="true"
+      [render-text-mode]="1"
+      [show-borders]="true"
+      [external-link-target]="'blank'"
+      (text-layer-rendered)="textLayerRendered($event)"
+    ></pdf-viewer>
   `,
-  styles: [
-  ]
+  styles: [],
 })
 export class PdfHighlighterComponent implements OnInit, OnDestroy {
-
   private pdfDocumentWithHighlights: PdfDocumentWithHighlights;
   private zoomMin: number = 0.5;
   private zoomMax: number = 1.5;
@@ -74,7 +75,6 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     });
   }
 
-
   ngOnInit() {
     document.addEventListener('mouseup', this.mouseUpHandler());
 
@@ -89,7 +89,9 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
   private mouseUpHandler(): (this: Document, ev: Event) => any {
     return () => {
       const textSelection = this.ngWindow.nativeWindow.getSelection();
-      const textSelectionisValidRangeOfText = !(textSelection.isCollapsed || textSelection.type !== 'Range');
+      const textSelectionisValidRangeOfText = !(
+        textSelection.isCollapsed || textSelection.type !== 'Range'
+      );
 
       if (textSelectionisValidRangeOfText) {
         this.appendToHighlights(textSelection);
@@ -101,7 +103,6 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
 
   @debounce()
   private appendToHighlights(textSelection) {
-
     const range: Range = textSelection.getRangeAt(0);
     const page = range.startContainer.parentElement;
     const node = page.closest('.page');
@@ -119,14 +120,15 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     const offset = node.getBoundingClientRect();
 
     const _highlightColor: string =
-      "hsl(" + Math.random() * 360 + ", 100%, 80%)";
+      'hsl(' + Math.random() * 360 + ', 100%, 80%)';
     const _containedText: string = range.toString();
 
     // Different rects of same Highlight have same Class groupId.
-    const _groupId: string = (clientRects[0].top + clientRects[0].width + clientRects[0].left)
-      .toString()
-      // @ts-ignore
-      .hashCode() + _pageNumber;
+    const _groupId: string =
+      (clientRects[0].top + clientRects[0].width + clientRects[0].left)
+        .toString()
+        // @ts-ignore
+        .hashCode() + _pageNumber;
 
     clientRects.forEach((rect) => {
       const _top = rect.top + node.scrollTop - offset.top - 9; // TODO: Replace Magic Number
@@ -147,7 +149,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
         width: _width * (1 / this.zoom),
         height: _height * (1 / this.zoom),
         color: _highlightColor,
-        containedText: _containedText
+        containedText: _containedText,
       };
 
       this.newHighlightCreated.emit(newHighlight);
@@ -200,11 +202,17 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
       });
 
       this.appendHighlightContainersToTextLayers(e, textLayerElementOnPage);
-      this.appendHighlightsToHighlightContainers(e, this.pdfDocumentWithHighlights);
+      this.appendHighlightsToHighlightContainers(
+        e,
+        this.pdfDocumentWithHighlights
+      );
     }
   }
 
-  private appendHighlightContainersToTextLayers(e: TextLayerRenderedEvent<any>, textLayerElementOnPage: any) {
+  private appendHighlightContainersToTextLayers(
+    e: TextLayerRenderedEvent<any>,
+    textLayerElementOnPage: any
+  ) {
     let divContainingTheTextHighlights = document.createElement('div');
     divContainingTheTextHighlights.className = `highlightsForPage_${e.pageNumber}`;
     divContainingTheTextHighlights.style.pointerEvents = 'none';
@@ -258,13 +266,14 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
       'scHighlightClassHandle'
     );
 
-    if (!existingHighlightIds.includes(`highlight__${newHighlightToAppend.id}`)) {
+    if (
+      !existingHighlightIds.includes(`highlight__${newHighlightToAppend.id}`)
+    ) {
       let highlightGettingAddedToCorrespondingPage = document.createElement(
         'div'
       );
       highlightGettingAddedToCorrespondingPage.id = `highlight__${newHighlightToAppend.id}`;
-      highlightGettingAddedToCorrespondingPage.className =
-        `scHighlightClassHandle groupId__${newHighlightToAppend.groupId}`;
+      highlightGettingAddedToCorrespondingPage.className = `scHighlightClassHandle groupId__${newHighlightToAppend.groupId}`;
       highlightGettingAddedToCorrespondingPage.style.position = 'absolute';
       highlightGettingAddedToCorrespondingPage.style.backgroundColor =
         newHighlightToAppend.color;
@@ -329,9 +338,25 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
    * Set an Pdf-Document wirh Highlights to be shown in the Pdf-Viewer.
    * @param pdfDocumentWithHighlights The Pdf Document that should be displayed.
    */
-  public setPdfDocumentWithHighlights(pdfDocumentWithHighlights: PdfDocumentWithHighlights) {
+  public setPdfDocumentWithHighlights(
+    pdfDocumentWithHighlights: PdfDocumentWithHighlights
+  ) {
     this.pdfDocumentWithHighlights = pdfDocumentWithHighlights;
     this.pdfSrcPath = this.pdfDocumentWithHighlights.pdfDocumentPath;
+    this.rerenderView();
+    this.newPdfDocumentWithHighlightsCreated.emit(
+      this.pdfDocumentWithHighlights
+    );
+  }
+
+  /**
+   * Delets an Highlight by it's groupId.
+   * @param groupId groupId of Highlight which should be deleted,
+   */
+  public deleteHighlightByGroupId(groupId: string) {
+    this.pdfDocumentWithHighlights.Highlights = this.pdfDocumentWithHighlights.Highlights.filter(
+      (e) => (e.groupId !== groupId ? true : false)
+    );
     this.rerenderView();
     this.newPdfDocumentWithHighlightsCreated.emit(
       this.pdfDocumentWithHighlights

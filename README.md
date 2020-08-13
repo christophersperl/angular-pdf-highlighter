@@ -16,7 +16,9 @@ This project was generated with [Angular CLI](https://github.com/angular/angular
 ## Screenshot of UI:
 
 ![Pic of the UI](UI.png)
-Prior Work:
+
+
+## Prior Art:
 
 - https://github.com/VadimDez/ng2-pdf-viewer <sup>[1](#myfootnote1)</sup>
 - https://github.com/agentcooper/react-pdf-highlighter <sup>[2](#myfootnote2)</sup>

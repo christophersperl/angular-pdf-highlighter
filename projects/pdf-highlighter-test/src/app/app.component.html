@@ -1,19 +1,19 @@
 <div style="width: 100vw; height: 100vh; background: rgb(219, 219, 219);">
   <as-split direction="horizontal">
-    <as-split-area [size]="70" minSize="40" maxSize="85">
+    <as-split-area class="scrollBar" [size]="70" minSize="40" maxSize="85">
       <lib-pdf-highlighter
         #pdfViewer
         (new-highlight-created)="handleNewHighlight($event)"
         (new-pdfdocumentwithhighlights-created)="handleNewDocument($event)"
       ></lib-pdf-highlighter>
     </as-split-area>
-    <as-split-area [size]="30" minSize="15" maxSize="60">
+    <as-split-area class="scrollBar" [size]="30" minSize="15" maxSize="60">
       <div class="container mt-1">
         <div class="btn-group shadow" role="group">
           <button
             (click)="increaseZoom()"
             type="button"
-            class="btn btn-outline-primary btn-sm"
+            class="btn btn-primary btn-sm"
           >
             <svg
               width="1em"
@@ -39,7 +39,7 @@
           <button
             (click)="decreaseZoom()"
             type="button"
-            class="btn btn-outline-primary btn-sm"
+            class="btn btn-primary btn-sm"
           >
             <svg
               width="1em"
@@ -65,14 +65,14 @@
           <button
             (click)="resetHighlights()"
             type="button"
-            class="btn btn-outline-secondary btn-sm"
+            class="btn btn-outline-primary btn-sm"
           >
             Reset Highlights
           </button>
           <button
             (click)="setPdfDocument()"
             type="button"
-            class="btn btn-outline-secondary btn-sm"
+            class="btn btn-outline-primary btn-sm"
           >
             Set Document
           </button>
@@ -84,10 +84,15 @@
         class="card m-3 shadow"
         [style.borderColor]="highlight.color"
       >
-        <div class="card-header" [style.backgroundColor]="highlight.color">
-          <span class="badge badge-light">id:</span>
+        <div class="card-header" [style.backgroundColor]="'#fff'">
+          <span class="badge" [style.backgroundColor]="highlight.color"
+            >id:</span
+          >
           {{ highlight.groupId }}
-          <a [href]="'#highlight__' + highlight.id" class="btn btn-light btn-xs"
+          <a
+            [href]="'#highlight__' + highlight.id"
+            class="btn btn-xs"
+            [style.backgroundColor]="highlight.color"
             >Scroll</a
           >
           <button

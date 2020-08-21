@@ -78,7 +78,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
           hash = (hash << 5) - hash + chr;
           hash |= 0;
         }
-        return Math.abs(hash).toString();
+        return Math.abs(hash).toString(); // avoid negative values.
       },
     });
   }
@@ -109,9 +109,9 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     if (!(node instanceof HTMLElement)) {
       return;
     }
-    const _pageNumber = node.dataset.pageNumber;
+    const pageNumber = node.dataset.pageNumber;
 
-    if (!_pageNumber) {
+    if (!pageNumber) {
       return;
     }
 
@@ -123,12 +123,18 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
       'hsl(' + Math.random() * 360 + ', 100%, 80%)';
     const containedText: string = range.toString();
 
-    // Different rects of same Highlight have same Class groupId.
+    /**
+     * Different rects of same Highlight have same Class groupId.
+     * The group- and highlight id's are build using
+     *  - positional information,
+     *  - length of document name and
+     *  - the pageNumber they belong to after an _.
+     */
     const groupId: string =
-      (clientRects[0].top + clientRects[0].width + clientRects[0].left)
-        .toString()
-        // @ts-ignore
-        .hashCode() + _pageNumber;
+      ((clientRects[0].top + clientRects[0].width + clientRects[0].left)
+        .toString() + this.pdfDocumentWithHighlights.pdfDocumentPath.length.toString()
+          // @ts-ignore
+          .hashCode() + "_" + pageNumber).replace(".", "")
 
     clientRects.forEach((rect) => {
       const top = rect.top + node.scrollTop - offset.top - 9; // TODO: Replace Magic Number
@@ -136,14 +142,14 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
       const width = rect.width;
       const height = rect.height;
       const id: string = (rect.top + rect.width + rect.left)
-        .toString()
-        // @ts-ignore
-        .hashCode();
+        .toString() + this.pdfDocumentWithHighlights.pdfDocumentPath.length.toString()
+          // @ts-ignore
+          .hashCode();
 
       const newHighlight: Highlight = {
-        id: id + _pageNumber,
+        id: (id + "_" + pageNumber).replace(".", ""),
         groupId: groupId,
-        onPageNumber: parseInt(_pageNumber, 10),
+        onPageNumber: parseInt(pageNumber, 10),
         x: left * (1 / this.zoom),
         y: top * (1 / this.zoom),
         width: width * (1 / this.zoom),

@@ -58,8 +58,16 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     private renderer: Renderer2,
     private elem: ElementRef,
     private ngWindow: WindowReferenceService
-  ) {
-    // TODO: switch to common Hash-Algorithm.
+  ) { }
+
+  ngOnInit() {
+    document.addEventListener('mouseup', this.mouseUpHandler());
+
+    this.pdfDocumentWithHighlights = initialPdfDocument;
+    this.pdfSrcPath = this.pdfDocumentWithHighlights.pdfDocumentPath;
+
+    // We use this to generate a Highlight ID based on the Java hashCode implementation on Strings.
+    // https://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
     Object.defineProperty(String.prototype, 'hashCode', {
       value: function () {
         var hash = 0,
@@ -75,13 +83,6 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnInit() {
-    document.addEventListener('mouseup', this.mouseUpHandler());
-
-    this.pdfDocumentWithHighlights = initialPdfDocument;
-    this.pdfSrcPath = this.pdfDocumentWithHighlights.pdfDocumentPath;
-  }
-
   ngOnDestroy() {
     document.removeEventListener('mouseup', this.mouseUpHandler());
   }
@@ -95,8 +96,6 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
 
       if (textSelectionisValidRangeOfText) {
         this.appendToHighlights(textSelection);
-      } else {
-        return;
       }
     };
   }
@@ -120,37 +119,37 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     const clientRects = Array.from(range.getClientRects());
     const offset = node.getBoundingClientRect();
 
-    const _highlightColor: string =
+    const highlightColor: string =
       'hsl(' + Math.random() * 360 + ', 100%, 80%)';
-    const _containedText: string = range.toString();
+    const containedText: string = range.toString();
 
     // Different rects of same Highlight have same Class groupId.
-    const _groupId: string =
+    const groupId: string =
       (clientRects[0].top + clientRects[0].width + clientRects[0].left)
         .toString()
         // @ts-ignore
         .hashCode() + _pageNumber;
 
     clientRects.forEach((rect) => {
-      const _top = rect.top + node.scrollTop - offset.top - 9; // TODO: Replace Magic Number
-      const _left = rect.left + node.scrollLeft - offset.left - 9;
-      const _width = rect.width;
-      const _height = rect.height;
-      const _id: string = (rect.top + rect.width + rect.left)
+      const top = rect.top + node.scrollTop - offset.top - 9; // TODO: Replace Magic Number
+      const left = rect.left + node.scrollLeft - offset.left - 9;
+      const width = rect.width;
+      const height = rect.height;
+      const id: string = (rect.top + rect.width + rect.left)
         .toString()
         // @ts-ignore
         .hashCode();
 
       const newHighlight: Highlight = {
-        id: _id + _pageNumber,
-        groupId: _groupId,
+        id: id + _pageNumber,
+        groupId: groupId,
         onPageNumber: parseInt(_pageNumber, 10),
-        x: _left * (1 / this.zoom),
-        y: _top * (1 / this.zoom),
-        width: _width * (1 / this.zoom),
-        height: _height * (1 / this.zoom),
-        color: _highlightColor,
-        containedText: _containedText,
+        x: left * (1 / this.zoom),
+        y: top * (1 / this.zoom),
+        width: width * (1 / this.zoom),
+        height: height * (1 / this.zoom),
+        color: highlightColor,
+        containedText: containedText,
       };
 
       this.newHighlightCreated.emit(newHighlight);
@@ -295,7 +294,10 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Not pretty but it get's the job done.
+  /**
+   * Rerenders the View
+   * by chanching it's scale.
+   */
   private flipflop: boolean = false;
   private rerenderView() {
     if (this.flipflop) {
@@ -306,7 +308,11 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     this.flipflop = !this.flipflop;
   }
 
-  // ###################Functions meant for Parent Component##########################
+
+  /************* Functions meant for use in Parent Component ****************
+   * Follwing functions are meant to be used inside Parent Component.       *
+   * Use @ViewChild in Parent component to access this Functions from there.*
+   **************************************************************************/
 
   /**
    * Increases the Scale of the PDF-Document.

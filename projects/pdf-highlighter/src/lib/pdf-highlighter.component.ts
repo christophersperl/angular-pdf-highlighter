@@ -61,7 +61,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    document.addEventListener('mouseup', () => this.mouseUpHandler());
+    document.addEventListener('keyup', e => this.keyUpHandler(e));
 
     this.pdfDocumentWithHighlights = initialPdfDocument;
     this.pdfSrcPath = this.pdfDocumentWithHighlights.pdfDocumentPath;
@@ -84,10 +84,14 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    document.removeEventListener('mouseup', () => this.mouseUpHandler());
+    document.removeEventListener('keyup', e => this.keyUpHandler(e));
   }
 
-  private mouseUpHandler() {
+  private keyUpHandler(e: KeyboardEvent) {
+    if (e.key !== "h") {
+      return;
+    }
+
     const textSelection = this.ngWindow.nativeWindow.getSelection();
     const textSelectionisValidRangeOfText = !(
       textSelection.isCollapsed || textSelection.type !== 'Range'

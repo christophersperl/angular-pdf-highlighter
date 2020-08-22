@@ -79,14 +79,14 @@
             type="button"
             class="btn btn-outline-primary btn-sm"
           >
-            Set Document
+            Load other Document
           </button>
         </div>
       </div>
 
       <div
         *ngFor="let highlight of highlights"
-        class="card m-3 shadow"
+        class="card m-3 shadow pl-1 pr-1 rounded-left"
         [style.borderColor]="highlight.color"
       >
         <div class="card-header" [style.backgroundColor]="'#fff'">
@@ -119,34 +119,32 @@
           </button>
         </div>
         <div class="card-body">
-          <!--h6 class="card-title">Text Content:</h6-->
-          <p
-            class="card-text text-muted blockquote m-0"
-            [style.fontSize]="'10px'"
-          >
-            {{
-              highlight.containedText.length > 95
-                ? (highlight.containedText | slice: 0:95) + "..."
-                : highlight.containedText
-            }}
-          </p>
-          <div
-            *ngIf="highlight.additionalInformationDisplayed"
-            class="card-footer bg-transparent"
-          >
-            {{
-              highlight.additionalInformationDisplayed.length > 150
-                ? (highlight.additionalInformationDisplayed | slice: 0:150) +
-                  "..."
-                : highlight.additionalInformationDisplayed
-            }}
-          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item text-muted" [style.fontSize]="'10px'">
+              {{
+                highlight.containedText.length > 95
+                  ? (highlight.containedText | slice: 0:95) + "..."
+                  : highlight.containedText
+              }}
+            </li>
+            <li
+              class="list-group-item"
+              *ngIf="highlight.additionalInformationDisplayed"
+            >
+              {{
+                highlight.additionalInformationDisplayed.length > 250
+                  ? (highlight.additionalInformationDisplayed | slice: 0:250) +
+                    "..."
+                  : highlight.additionalInformationDisplayed
+              }}
+            </li>
+          </ul>
         </div>
       </div>
     </as-split-area>
   </as-split>
 
-  <!-- Modal -->
+  <!-- Add Description Modal -->
   <div
     class="modal fade"
     id="staticBackdrop"
@@ -158,7 +156,6 @@
   >
     <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-header"></div>
         <div class="modal-body">
           <div class="input-group">
             <div class="input-group-prepend">
@@ -191,5 +188,22 @@
         </div>
       </div>
     </div>
+  </div>
+</div>
+
+<div
+  id="importantInformation"
+  class="card"
+  style="width: 18rem;"
+  [style.display]="showInformation"
+>
+  <div class="card-body">
+    <h1 class="card-text">
+      To add highlights, please select the text and press
+      <strong [style.color]="'red'">(H)</strong>
+    </h1>
+    <button class="btn btn-info btn-block" (click)="hideInfoDialog()">
+      OK
+    </button>
   </div>
 </div>

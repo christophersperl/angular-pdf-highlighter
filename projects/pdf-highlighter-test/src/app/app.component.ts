@@ -1,9 +1,10 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit } from '@angular/core';
 import {
   PdfHighlighterComponent,
   PdfDocumentWithHighlights,
   Highlight,
 } from 'pdf-highlighter';
+import { importExpr } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-root',
@@ -11,10 +12,11 @@ import {
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
+
   title = 'pdf-highlighter-test';
   highlights = [];
   private selectedHighlightId = "";
-
+  showInformation = 'block'
   // ######### Example: Use Events to implement Overview of Highlights ###################
   handleNewHighlight(e: Highlight) {
     console.log(e);
@@ -28,6 +30,11 @@ export class AppComponent {
         this.highlights = [...this.highlights, highlight];
       }
     }
+  }
+
+  //Information toggle
+  hideInfoDialog() {
+    this.showInformation = 'none';
   }
 
   // ######### Example: Use Methods provided to implement functionality ###################

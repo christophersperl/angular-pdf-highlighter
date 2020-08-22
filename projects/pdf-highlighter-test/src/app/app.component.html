@@ -101,6 +101,15 @@
             >Scroll</a
           >
           <button
+            data-toggle="modal"
+            data-target="#staticBackdrop"
+            class="btn btn-xs ml-1"
+            [style.backgroundColor]="highlight.color"
+            (click)="setSelectedHighlightId(highlight.id)"
+          >
+            Add Description
+          </button>
+          <button
             (click)="deleteHighlight(highlight.groupId)"
             type="button"
             class="close"
@@ -111,15 +120,76 @@
         </div>
         <div class="card-body">
           <!--h6 class="card-title">Text Content:</h6-->
-          <p class="card-text text-muted blockquote">
-            <small>{{
-              highlight.containedText.length > 85
-                ? (highlight.containedText | slice: 0:85) + "..."
+          <p
+            class="card-text text-muted blockquote m-0"
+            [style.fontSize]="'10px'"
+          >
+            {{
+              highlight.containedText.length > 95
+                ? (highlight.containedText | slice: 0:95) + "..."
                 : highlight.containedText
-            }}</small>
+            }}
           </p>
+          <div
+            *ngIf="highlight.additionalInformationDisplayed"
+            class="card-footer bg-transparent"
+          >
+            {{
+              highlight.additionalInformationDisplayed.length > 150
+                ? (highlight.additionalInformationDisplayed | slice: 0:150) +
+                  "..."
+                : highlight.additionalInformationDisplayed
+            }}
+          </div>
         </div>
       </div>
     </as-split-area>
   </as-split>
+
+  <!-- Modal -->
+  <div
+    class="modal fade"
+    id="staticBackdrop"
+    data-backdrop="static"
+    data-keyboard="false"
+    tabindex="-1"
+    aria-labelledby="staticBackdropLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header"></div>
+        <div class="modal-body">
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <span
+                class="input-group-text"
+                [style.writingMode]="'vertical-rl'"
+                [style.textOrientation]="'upright'"
+                >Description</span
+              >
+            </div>
+            <textarea
+              ref-textarea
+              class="form-control"
+              aria-label="With textarea"
+            ></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">
+            Close
+          </button>
+          <button
+            data-dismiss="modal"
+            type="button"
+            class="btn btn-primary"
+            (click)="addAdditionalInformation(textarea.value)"
+          >
+            Add
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

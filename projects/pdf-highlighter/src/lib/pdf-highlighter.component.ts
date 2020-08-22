@@ -61,7 +61,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    document.addEventListener('mouseup', this.mouseUpHandler());
+    document.addEventListener('mouseup', () => this.mouseUpHandler());
 
     this.pdfDocumentWithHighlights = initialPdfDocument;
     this.pdfSrcPath = this.pdfDocumentWithHighlights.pdfDocumentPath;
@@ -84,20 +84,18 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    document.removeEventListener('mouseup', this.mouseUpHandler());
+    document.removeEventListener('mouseup', () => this.mouseUpHandler());
   }
 
-  private mouseUpHandler(): (this: Document, ev: Event) => any {
-    return () => {
-      const textSelection = this.ngWindow.nativeWindow.getSelection();
-      const textSelectionisValidRangeOfText = !(
-        textSelection.isCollapsed || textSelection.type !== 'Range'
-      );
+  private mouseUpHandler() {
+    const textSelection = this.ngWindow.nativeWindow.getSelection();
+    const textSelectionisValidRangeOfText = !(
+      textSelection.isCollapsed || textSelection.type !== 'Range'
+    );
 
-      if (textSelectionisValidRangeOfText) {
-        this.appendToHighlights(textSelection);
-      }
-    };
+    if (textSelectionisValidRangeOfText) {
+      this.appendToHighlights(textSelection);
+    }
   }
 
   @debounce()
@@ -366,7 +364,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
 
   /**
    * Delets an Highlight by it's groupId.
-   * @param groupId groupId of Highlight which should be deleted,
+   * @param groupId groupId of Highlight which should be deleted.
    */
   public deleteHighlightByGroupId(groupId: string) {
     this.pdfDocumentWithHighlights.Highlights = this.pdfDocumentWithHighlights.Highlights.filter(
@@ -376,5 +374,16 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     this.newPdfDocumentWithHighlightsCreated.emit(
       this.pdfDocumentWithHighlights
     );
+  }
+
+  /**
+   * Adds Additional Information to Highlight.
+   * @param additionalInformationDisplayed Additional Information.
+   * @param id Id of Highlight which should be deleted.
+   */
+  public addAdditionalInformationToHighlightById(additionalInformationDisplayed: string, id: string) {
+    this.pdfDocumentWithHighlights.Highlights
+      .filter((e) => (e.id === id ? true : false))
+      .map(e => e.additionalInformationDisplayed = additionalInformationDisplayed);
   }
 }

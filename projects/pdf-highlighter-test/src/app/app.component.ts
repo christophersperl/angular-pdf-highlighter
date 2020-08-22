@@ -13,10 +13,11 @@ import {
 export class AppComponent {
   title = 'pdf-highlighter-test';
   highlights = [];
+  private selectedHighlightId = "";
 
   // ######### Example: Use Events to implement Overview of Highlights ###################
   handleNewHighlight(e: Highlight) {
-    // console.log(e);
+    console.log(e);
   }
 
   handleNewDocument(e: PdfDocumentWithHighlights) {
@@ -49,15 +50,16 @@ export class AppComponent {
     pdfDocumentPath: 'assets/Test2.pdf',
     Highlights: [
       {
-        color: 'hsl(282.8976430074274, 100%, 80%)',
-        containedText: 'User! ;-) ',
-        groupId: '17471359521',
-        height: 14.799972992995757,
-        id: '17471359521',
+        color: "hsl(59.27958500254291, 100%, 80%)",
+        containedText: "Stet clita kasd gubergren, no sea takimata sanctus ",
+        groupId: "108843466186523441573_1",
+        height: 14.666656494140629,
+        id: "108843466186523441573_1",
         onPageNumber: 1,
-        width: 53.36115269353481,
-        x: 383.5097178086416,
-        y: 376.88713531989595,
+        width: 293.53610229492193,
+        x: 325.84298706054693,
+        y: 424.61807250976574,
+        additionalInformationDisplayed: "This is Text added using the <<Add Description>> Button."
       },
     ],
   };
@@ -67,5 +69,16 @@ export class AppComponent {
 
   deleteHighlight(groupId: string) {
     this.pdfViewer.deleteHighlightByGroupId(groupId);
+  }
+
+
+  // Example of how to Add Description.
+  setSelectedHighlightId(selectedHighlightId: string) {
+    // Store Id of Highlight where Add Description Button get clicked.
+    this.selectedHighlightId = selectedHighlightId
+  }
+
+  addAdditionalInformation(text: string) {
+    this.pdfViewer.addAdditionalInformationToHighlightById(text, this.selectedHighlightId);
   }
 }

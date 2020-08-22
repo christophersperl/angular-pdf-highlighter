@@ -100,6 +100,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     if (textSelectionisValidRangeOfText) {
       this.appendToHighlights(textSelection);
     }
+
   }
 
   @debounce()

@@ -17,9 +17,10 @@ export class AppComponent {
   highlights = [];
   private selectedHighlightId = "";
   showInformation = 'block'
+
   // ######### Example: Use Events to implement Overview of Highlights ###################
   handleNewHighlight(e: Highlight) {
-    console.log(e);
+    // console.log(e);
   }
 
   handleNewDocument(e: PdfDocumentWithHighlights) {

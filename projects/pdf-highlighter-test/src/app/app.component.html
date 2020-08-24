@@ -13,14 +13,14 @@
 </nav>
 <div style="width: 100vw; height: 97vh; background: rgb(219, 219, 219);">
   <as-split direction="horizontal">
-    <as-split-area class="scrollBar" [size]="70" minSize="40" maxSize="85">
+    <as-split-area class="scrollBar" [size]="65" minSize="40" maxSize="85">
       <lib-pdf-highlighter
         #pdfViewer
         (new-highlight-created)="handleNewHighlight($event)"
         (new-pdfdocumentwithhighlights-created)="handleNewDocument($event)"
       ></lib-pdf-highlighter>
     </as-split-area>
-    <as-split-area class="scrollBar" [size]="30" minSize="15" maxSize="60">
+    <as-split-area class="scrollBar" [size]="35" minSize="15" maxSize="60">
       <div class="container mt-1">
         <div class="btn-group shadow" role="group">
           <button
@@ -165,15 +165,8 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-body">
+          <p class="modal-title" id="exampleModalLongTitle">Description:</p>
           <div class="input-group">
-            <div class="input-group-prepend">
-              <span
-                class="input-group-text"
-                [style.writingMode]="'vertical-rl'"
-                [style.textOrientation]="'upright'"
-                >Description</span
-              >
-            </div>
             <textarea
               ref-textarea
               class="form-control"

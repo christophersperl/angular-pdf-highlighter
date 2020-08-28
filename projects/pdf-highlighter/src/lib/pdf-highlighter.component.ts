@@ -346,6 +346,16 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Set the Scale of the PDF-Document.
+   * @param zoom Numeric value between 0.5 and 1.5
+   */
+  public setZoom(zoom: number): void {
+    if (zoom > this.zoomMin && zoom < this.zoomMax) {
+      this.zoom = zoom;
+    }
+  }
+
+  /**
    * Reset the Highlights on current PDF-Document.
    */
   public resetHighlights() {
@@ -373,7 +383,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
 
   /**
    * Delets an Highlight by it's groupId.
-   * @param groupId groupId of Highlight which should be deleted.
+   * @param groupId of Highlight which should be deleted.
    */
   public deleteHighlightByGroupId(groupId: string) {
     this.pdfDocumentWithHighlights.Highlights = this.pdfDocumentWithHighlights.Highlights.filter(

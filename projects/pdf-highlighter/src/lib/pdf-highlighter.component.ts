@@ -183,12 +183,7 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
 
       // Get the Page-Number the Highlight belongs.
       textLayerElementOnPage.addEventListener('mouseup', (e) => {
-        const highlightsPageNumber = parseInt(
-          e.target.parentElement
-            .closest('.page')
-            .getAttribute('data-page-number'),
-          10
-        );
+        const highlightsPageNumber = this.getPageNumberFromEvent(e);
 
         this.pdfDocumentWithHighlights.Highlights.forEach((highlight) => {
           if (highlightsPageNumber === highlight.onPageNumber) {
@@ -317,6 +312,15 @@ export class PdfHighlighterComponent implements OnInit, OnDestroy {
     this.flipflop = !this.flipflop;
   }
 
+  private getPageNumberFromEvent(e: Event): any {
+    // @ts-ignore
+    if (e.target.parentElement.closest('.page') !== null) {
+      // @ts-ignore
+      return parseInt(e.target.parentElement.closest('.page').getAttribute('data-page-number'), 10);
+    } else {
+      return 0;
+    }
+  }
 
   /************* Functions meant for use in Parent Component ****************
    * Follwing functions are meant to be used inside Parent Component.       *

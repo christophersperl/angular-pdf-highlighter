@@ -1,6 +1,8 @@
 # PdfHighlighter
 
 This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.6.
+[Lib](angular-pdf-highlighter/projects/pdf-highlighter/)
+
 
 ## Code scaffolding
 

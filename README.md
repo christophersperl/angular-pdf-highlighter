@@ -1,8 +1,9 @@
 # PdfHighlighter
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 10.0.1.
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.0.2.
 
 # Online Demo:
+
 https://projects.sperl.dev/
 
 ## Get Started:
@@ -15,11 +16,9 @@ https://projects.sperl.dev/
 
 - npm run build
 
-
 ## Screenshot of UI:
 
 ![Pic of the UI](UI.png)
-
 
 ## Prior Art:
 
